@@ -10,6 +10,9 @@
 				height: 600px;
 				width: 800px;
 				transform: rotate(270deg);
+				position: absolute;
+				top: 100px;
+				left: -100px;
 			}
 
 			.flex {
