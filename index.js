@@ -16,9 +16,13 @@ const app = express();
 const benchpress = require('benchpressjs');
 
 const viewsDir = path.join(__dirname, 'templates');
-const data = {
-  foo: 'bar',
-};
+
+// Sanity checks
+const required = ['OPENWEATHERMAP_KEY'];
+if (!required.every(prop => !!nconf.get(prop))) {
+	process.stdout.write('Some required environment variables are not set. Check index.js.\n');
+	process.exit(1);
+}
 
 // Precompile templates
 ['dash'].forEach(async (tpl) => {
