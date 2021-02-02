@@ -7,8 +7,8 @@
 			body {
 				font-family: 'Open Sans', sans-serif;
 				margin: .6em;
-				height: 600px;
-				width: 800px;
+				height: calc(600px - 1.2em);
+				width: calc(800px - 1.2em);
 				transform: rotate(270deg);
 				position: absolute;
 				top: 100px;
