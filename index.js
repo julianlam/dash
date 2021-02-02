@@ -8,6 +8,7 @@ const fsPromises = fs.promises;
 const puppeteer = require('puppeteer');
 const pngjs = require('pngjs').PNG;
 const LRU = require('lru-cache');
+const { google } = require('googleapis');
 
 const nconf = require('nconf');
 nconf.argv().env();
@@ -44,22 +45,35 @@ const cache = new LRU({
 	maxAge: 1000 * 60 * 15,
 });
 
+const auth = new google.auth.GoogleAuth({
+	keyFile: nconf.get('GOOGLE_APPLICATION_CREDENTIALS'),
+	scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
+});
+const calendar = google.calendar({version: 'v3', auth});
+const getEvents = util.promisify(calendar.events.list.bind(calendar.events));
+
+const formatTimeDate = (date) => {
+	date = date || new Date();
+	let minutes = date.getMinutes();
+	let hours = date.getHours();
+	[minutes, hours] = [minutes, hours].map(num => num < 10 ? '0'.concat(num) : num);
+	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	return {
+		time: `${hours}:${minutes}`,
+		date: `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`,
+	};
+}
+
 app.get('/dash', async (req, res) => {
 	// Time & Date
-	const now = new Date();
-	let minutes = now.getMinutes();
-	let hours = now.getHours();
-	[minutes, hours] = [minutes, hours].map(num => num < 10 ? '0'.concat(num) : num);
-	const timeLabel = `${hours}:${minutes}`;
-	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-	const dateLabel = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+	const { time: timeLabel, date: dateLabel } = formatTimeDate();
 
 	// Weather
 	let weather;
 	if (cache.has('weather')) {
 		weather = cache.get('weather');
 	} else {
-		weather = await request.get('http://api.openweathermap.org/data/2.5/forecast/daily?q=Toronto&units=metric&cnt=1&appid=' + nconf.get('OPENWEATHERMAP_KEY'), {
+		weather = await request.get(`http://api.openweathermap.org/data/2.5/forecast/daily?id=5911592&units=metric&cnt=1&appid=${nconf.get('OPENWEATHERMAP_KEY')}`, {
 			json: true,
 		});
 		cache.set('weather', weather);
@@ -78,6 +92,34 @@ app.get('/dash', async (req, res) => {
 		weatherText = "Today, I couldn't get the weather for you :\\ (" + err.message + ')';
 	}
 
+	// Calendar
+	let events;
+	try {
+		const response = (await getEvents({
+			calendarId: nconf.get('GOOGLE_CALENDAR_ID'),
+			timeMin: (new Date()).toISOString(),
+			maxResults: 10,
+			singleEvents: true,
+			orderBy: 'startTime',
+		})).data.items;
+
+		events = response.map((item) => ({
+			summary: item.summary,
+			start: new Date(item.start.dateTime),
+			end: new Date(item.end.dateTime),
+		})).map((item) => {
+			const formatted = formatTimeDate(item.start);
+			length = (item.end - item.start) / 1000 / 60;	// minutes
+			length = `${length} minutes`;	// TODO: handle hours
+			item.text = `${formatted.date} – ${formatted.time} (${length})`
+
+			return item;
+		});
+	} catch (e) {
+		console.log(e);
+		events = [];
+	}
+
 	res.render('dash', {
 		datetime: {
 			timeLabel,
@@ -87,7 +129,8 @@ app.get('/dash', async (req, res) => {
 			icon: iconUrl,
 			weatherText,
 			feelsLike,
-		}
+		},
+		events
 	});
 });
 

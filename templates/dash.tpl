@@ -42,6 +42,14 @@
 			.weather img {
 				margin: 0 auto;
 			}
+			.weather p {
+				margin-top: 0;
+			}
+
+			.full {
+				background-color: #eee;
+				margin-top: 0.6em;
+			}
 		</style>
 	</head>
 	<body>
@@ -61,11 +69,14 @@
 			</div>
 			<div class="full">
 				<strong>Upcoming appointments</strong>
-				<ol>
-					<li>Grocery run &ndash; Maybe fortinos, probably Food Basics. Always bananas.</li>
-					<li>Doctor's appointment &ndash; ask about getting refill on medications.</li>
-					<li>Work meeting</li>
-				</ol>
+				<ul>
+					{{{ each events }}}
+						<li>
+							<strong>{../summary}</strong><br />
+							<small>{../text}</small>
+						</li>
+					{{{ end }}}
+				</ul>
 			</div>
 		</div>
 	</body>
