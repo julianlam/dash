@@ -94,30 +94,36 @@ app.get('/dash', async (req, res) => {
 
 	// Calendar
 	let events;
-	try {
-		const response = (await getEvents({
-			calendarId: nconf.get('GOOGLE_CALENDAR_ID'),
-			timeMin: (new Date()).toISOString(),
-			maxResults: 10,
-			singleEvents: true,
-			orderBy: 'startTime',
-		})).data.items;
+	if (cache.has('events')) {
+		events = cache.get('events');
+	} else {
+		try {
+			const response = (await getEvents({
+				calendarId: nconf.get('GOOGLE_CALENDAR_ID'),
+				timeMin: (new Date()).toISOString(),
+				maxResults: 10,
+				singleEvents: true,
+				orderBy: 'startTime',
+			})).data.items;
 
-		events = response.map((item) => ({
-			summary: item.summary,
-			start: new Date(item.start.dateTime),
-			end: new Date(item.end.dateTime),
-		})).map((item) => {
-			const formatted = formatTimeDate(item.start);
-			length = (item.end - item.start) / 1000 / 60;	// minutes
-			length = `${length} minutes`;	// TODO: handle hours
-			item.text = `${formatted.date} – ${formatted.time} (${length})`
+			events = response.map((item) => ({
+				summary: item.summary,
+				start: new Date(item.start.dateTime),
+				end: new Date(item.end.dateTime),
+			})).map((item) => {
+				const formatted = formatTimeDate(item.start);
+				length = (item.end - item.start) / 1000 / 60;	// minutes
+				length = `${length} minutes`;	// TODO: handle hours
+				item.text = `${formatted.date} – ${formatted.time} (${length})`
 
-			return item;
-		});
-	} catch (e) {
-		console.log(e);
-		events = [];
+				return item;
+			});
+		} catch (e) {
+			console.log(e);
+			events = [];
+		}
+
+		cache.set('events', events);
 	}
 
 	res.render('dash', {
