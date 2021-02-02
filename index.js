@@ -3,8 +3,10 @@ const util = require('util');
 let { execFile } = require('child_process');
 execFile = util.promisify(execFile);
 const request = require('request-promise-native');
-const fs = require('fs').promises;
+const fs = require('fs');
+const fsPromises = fs.promises;
 const puppeteer = require('puppeteer');
+const PngCrush = require('pngcrush');
 
 const nconf = require('nconf');
 nconf.argv().env();
@@ -20,9 +22,9 @@ const data = {
 
 // Precompile templates
 ['dash'].forEach(async (tpl) => {
-	const template = await fs.readFile(path.join(viewsDir, `${tpl}.tpl`));
+	const template = await fsPromises.readFile(path.join(viewsDir, `${tpl}.tpl`));
 	const precompiled = await benchpress.precompile(template.toString(), { filename: `${tpl}.tpl` });
-	await fs.writeFile(path.join(viewsDir, `${tpl}.js`), precompiled);
+	await fsPromises.writeFile(path.join(viewsDir, `${tpl}.js`), precompiled);
 })
 
 app.engine('tpl', function (filepath, data, next) {
@@ -71,6 +73,8 @@ app.get('/dash', async (req, res) => {
 app.get('/dash.png', async (req, res) => {
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
+	const grayscale = new PngCrush(['-c', '0']);
+
 	await page.setViewport({
 		width: 600,
 		height: 800,
@@ -79,7 +83,7 @@ app.get('/dash.png', async (req, res) => {
 	await page.screenshot({path: 'dash.png'});
 	await browser.close();
 
-	res.sendStatus(200);
+	await fs.createReadStream(path.join(__dirname, 'dash.png')).pipe(grayscale).pipe(res);
 });
 
 app.listen(3000);
