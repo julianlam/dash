@@ -45,7 +45,7 @@
 				text-overflow: ellipsis;
 				margin-bottom: .6em;
 			}
-			.events .location {
+			.events .location, .events strong {
 				white-space: nowrap;
 			}
 		</style>

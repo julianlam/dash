@@ -101,31 +101,37 @@ app.get('/dash', async (req, res) => {
 	if (cache.has('events')) {
 		events = cache.get('events');
 	} else {
-		try {
-			const response = (await getEvents({
-				calendarId: nconf.get('GOOGLE_CALENDAR_ID'),
-				timeMin: (new Date()).toISOString(),
-				maxResults: 10,
-				singleEvents: true,
-				orderBy: 'startTime',
-			})).data.items;
+		const calendarIds = nconf.get('GOOGLE_CALENDAR_ID').split(',');
+		events = (await Promise.all(calendarIds.map(async (id) => {
+			try {
+				const response = (await getEvents({
+					calendarId: id,
+					timeMin: (new Date()).toISOString(),
+					maxResults: 10,
+					singleEvents: true,
+					orderBy: 'startTime',
+				})).data.items;
 
-			events = response.map((item) => ({
-				summary: item.summary,
-				location: item.location,
-				start: new Date(item.start.dateTime),
-				end: new Date(item.end.dateTime),
-			})).map((item) => {
-				const formatted = formatTimeDate(item.start);
-				length = (item.end - item.start) / 1000 / 60;	// minutes
-				length = `${length} minutes`;	// TODO: handle hours
-				item.text = `${formatted.date} – ${formatted.time} (${length})`
+				return response.map((item) => ({
+					summary: item.summary,
+					location: item.location,
+					start: new Date(item.start.dateTime),
+					end: new Date(item.end.dateTime),
+				})).map((item) => {
+					const formatted = formatTimeDate(item.start);
+					length = (item.end - item.start) / 1000 / 60;	// minutes
+					length = `${length} minutes`;	// TODO: handle hours
+					item.text = `${formatted.date} – ${formatted.time} (${length})`
 
-				return item;
-			});
-		} catch (e) {
-			events = [];
-		}
+					return item;
+				});
+			} catch (e) {
+				return [];
+			}
+		}))).flat().sort((a, b) => a.start - b.start);
+
+		// 10 events is enough (overflows otherwise)
+		events.length = 10;
 
 		cache.set('events', events);
 	}
