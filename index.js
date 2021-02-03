@@ -124,7 +124,6 @@ app.get('/dash', async (req, res) => {
 				return item;
 			});
 		} catch (e) {
-			console.log(e);
 			events = [];
 		}
 
