@@ -1,6 +1,6 @@
 # Kindle Dashboard Generator
 
-[Sample of the dashbaord running on a Kindle](./sample.jpg)
+![Sample of the dashboard running on a Kindle](./sample.jpg)
 
 This is a simple node application that renders a dashboard-style page that is compatible with the Kindle 4 resolution (600x800). It is meant to be used with [Pascal W's Kindle Dashboard](https://github.com/pascalw/kindle-dash) script.
 
