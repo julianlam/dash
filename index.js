@@ -20,9 +20,17 @@ const benchpress = require('benchpressjs');
 const viewsDir = path.join(__dirname, 'templates');
 
 // Sanity checks
-const required = ['OPENWEATHERMAP_KEY'];
-if (!required.every(prop => !!nconf.get(prop))) {
-	process.stdout.write('Some required environment variables are not set. Check index.js.\n');
+const required = ['OPENWEATHERMAP_KEY', 'GOOGLE_CALENDAR_ID', 'GOOGLE_APPLICATION_CREDENTIALS'];
+const checkRequired = (prop) => {
+	const ok = !!nconf.get(prop);
+	if (!ok) {
+		process.stdout.write(`Environment variable ${prop} not found.\n`)
+	}
+
+	return ok;
+}
+if (!required.every(checkRequired)) {
+	process.stdout.write('Some required environment variables are not set. Aborting.\n');
 	process.exit(1);
 }
 
