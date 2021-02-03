@@ -70,15 +70,14 @@ const formatTimeDate = (date) => {
 }
 
 app.get('/dash', async (req, res) => {
-	// Time & Date
-	const { time: timeLabel, date: dateLabel } = formatTimeDate();
-
 	// Weather
 	let weather;
 	if (cache.has('weather')) {
 		weather = cache.get('weather');
 	} else {
-		weather = await request.get(`http://api.openweathermap.org/data/2.5/forecast/daily?id=5911592&units=metric&cnt=1&appid=${nconf.get('OPENWEATHERMAP_KEY')}`, {
+		const lon = nconf.get('LON');
+		const lat = nconf.get('LAT');
+		weather = await request.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,current,minutely&units=metric&appid=${nconf.get('OPENWEATHERMAP_KEY')}`, {
 			json: true,
 		});
 		cache.set('weather', weather);
@@ -89,9 +88,9 @@ app.get('/dash', async (req, res) => {
 	let feelsLike = '';
 
 	try {
-		iconUrl = 'http://openweathermap.org/img/wn/' + weather.list[0].weather[0].icon + '@2x.png';
-		weatherText = 'Today, expect ' + weather.list[0].weather[0].description + ', a high of ' + weather.list[0].temp.max + '°C and a low of ' + weather.list[0].temp.min + '°C';
-		feelsLike = `It feels like ${Math.round(weather.list[0].feels_like.day)}°C outside.`;
+		iconUrl = 'http://openweathermap.org/img/wn/' + weather.daily[0].weather[0].icon + '@2x.png';
+		weatherText = 'Today, expect ' + weather.daily[0].weather[0].description + ', a high of ' + weather.daily[0].temp.max + '°C and a low of ' + weather.daily[0].temp.min + '°C';
+		feelsLike = `It feels like ${Math.round(weather.daily[0].feels_like.day)}°C today, and ${Math.round(weather.daily[0].feels_like.eve)}°C tonight.`;
 	} catch (err) {
 		iconUrl = 'http://openweathermap.org/img/wn/03d@2x.png'; // fallback to scattered clouds
 		weatherText = "Today, I couldn't get the weather for you :\\ (" + err.message + ')';
@@ -113,6 +112,7 @@ app.get('/dash', async (req, res) => {
 
 			events = response.map((item) => ({
 				summary: item.summary,
+				location: item.location,
 				start: new Date(item.start.dateTime),
 				end: new Date(item.end.dateTime),
 			})).map((item) => {
@@ -131,10 +131,6 @@ app.get('/dash', async (req, res) => {
 	}
 
 	res.render('dash', {
-		datetime: {
-			timeLabel,
-			dateLabel,
-		},
 		weather: {
 			icon: iconUrl,
 			weatherText,

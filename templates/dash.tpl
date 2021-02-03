@@ -15,29 +15,19 @@
 				left: -100px;
 			}
 
-			.flex {
-				align-items: center;
-			}
-
-			.datetime {
-				text-align: center;
-			}
-
-			.datetime h1 {
-				font-weight: 600;
-				font-size: 3em;
-				text-align: center;
-				padding: 0;
-			}
-
-			.datetime span {
-				font-weight: 400;
-				font-size: 1em;
+			.flex > div > div {
+				padding: 0.6em;
 			}
 
 			.weather {
 				text-align: center;
 				background-color: #ccc;
+			}
+			.weather .forecast {
+				font-size: .9em;
+			}
+			.weather .feelslike {
+				font-weight: 600;
 			}
 			.weather img {
 				margin: 0 auto;
@@ -46,37 +36,46 @@
 				margin-top: 0;
 			}
 
-			.full {
-				background-color: #eee;
-				margin-top: 0.6em;
+			.events ul {
+				padding: 0;
+			}
+			.events li {
+				list-style-type: none;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				margin-bottom: .6em;
+			}
+			.events .location {
+				white-space: nowrap;
 			}
 		</style>
 	</head>
 	<body>
 		<div class="flex two">
-			<div class="datetime">
-				<h1>{datetime.timeLabel}</h1>
-				<span>{datetime.dateLabel}</span>
+			<div>
+				<div class="weather">
+					<img src="{weather.icon}" />
+					<p class="forecast">
+						{weather.weatherText}
+					</p>
+					<p class="feelslike">
+						{weather.feelsLike}
+					</p>
+				</div>
 			</div>
-			<div class="weather">
-				<img src="{weather.icon}" />
-				<p>
-					{weather.weatherText}
-				</p>
-				<p>
-					{weather.feelsLike}
-				</p>
-			</div>
-			<div class="full">
-				<strong>Upcoming appointments</strong>
-				<ul>
-					{{{ each events }}}
-						<li>
-							<strong>{../summary}</strong><br />
-							<small>{../text}</small>
-						</li>
-					{{{ end }}}
-				</ul>
+			<div>
+				<div class="events">
+					<strong>Upcoming appointments</strong>
+					<ul>
+						{{{ each events }}}
+							<li>
+								<strong>{../summary}</strong><br />
+								<small>{../text}</small><br />
+								<small class="location">{../location}</small>
+							</li>
+						{{{ end }}}
+					</ul>
+				</div>
 			</div>
 		</div>
 	</body>
