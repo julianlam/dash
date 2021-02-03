@@ -30,14 +30,11 @@ if (!required.every(prop => !!nconf.get(prop))) {
 ['dash'].forEach(async (tpl) => {
 	const template = await fsPromises.readFile(path.join(viewsDir, `${tpl}.tpl`));
 	const precompiled = await benchpress.precompile(template.toString(), { filename: `${tpl}.tpl` });
-	await fsPromises.writeFile(path.join(viewsDir, `${tpl}.js`), precompiled);
+	await fsPromises.writeFile(path.join(viewsDir, `${tpl}.jst`), precompiled);
 })
 
-app.engine('tpl', function (filepath, data, next) {
-	filepath = filepath.replace(/\.tpl$/, '.js');
-	benchpress.__express(filepath, data, next);
-});
-app.set('view engine', 'tpl');
+app.engine('jst', benchpress.__express);
+app.set('view engine', 'jst');
 app.set('views', viewsDir);
 
 // Cache results for 15 minutes
