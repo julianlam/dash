@@ -128,10 +128,21 @@ app.get('/dash', async (req, res) => {
 			} catch (e) {
 				return [];
 			}
-		}))).flat().sort((a, b) => a.start - b.start);
+		}))).flat().sort((a, b) => a.start - b.start).filter((event, idx, all) => {
+			if (idx > 0) {
+				const previous = all[idx-1];
+				if (event.summary === previous.summary && event.start.getTime() === previous.start.getTime()) {
+					return false;
+				}
+			}
+
+			return true;
+		});
 
 		// 10 events is enough (overflows otherwise)
-		events.length = 10;
+		if (events.length > 10) {
+			events.length = 10;
+		}
 
 		cache.set('events', events);
 	}
