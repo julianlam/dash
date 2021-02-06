@@ -70,30 +70,39 @@ const formatTimeDate = (date) => {
 }
 
 app.get('/dash', async (req, res) => {
+	const now = new Date();
+
+	// Date
+	let dateString = formatTimeDate(now).date.split(' ');
+	const date = {
+		day: dateString[0],
+		month: dateString[1],
+	};
+
 	// Weather
-	let weather;
+	let weatherData;
 	if (cache.has('weather')) {
-		weather = cache.get('weather');
+		weatherData = cache.get('weather');
 	} else {
 		const lon = nconf.get('LON');
 		const lat = nconf.get('LAT');
-		weather = await request.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,current,minutely&units=metric&appid=${nconf.get('OPENWEATHERMAP_KEY')}`, {
+		weatherData = await request.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,minutely&cnt=1&units=metric&appid=${nconf.get('OPENWEATHERMAP_KEY')}`, {
 			json: true,
 		});
-		cache.set('weather', weather);
+		cache.set('weather', weatherData);
 	}
 
-	let iconUrl;
-	let weatherText;
-	let feelsLike = '';
+	const weather = {};
 
 	try {
-		iconUrl = 'http://openweathermap.org/img/wn/' + weather.daily[0].weather[0].icon + '@2x.png';
-		weatherText = 'Today, expect ' + weather.daily[0].weather[0].description + ', a high of ' + weather.daily[0].temp.max + '°C and a low of ' + weather.daily[0].temp.min + '°C';
-		feelsLike = `It feels like ${Math.round(weather.daily[0].feels_like.day)}°C today, and ${Math.round(weather.daily[0].feels_like.eve)}°C tonight.`;
+		weather.icon = 'http://openweathermap.org/img/wn/' + weatherData.daily[0].weather[0].icon + '@2x.png';
+		weather.label = weatherData.daily[0].weather[0].description;
+		weather.current = `${Math.round(weatherData.current.temp)}°C`;
+		weather.feels_like = `${Math.round(weatherData.current.feels_like)}°C`;
+		weather.high = `${Math.round(weatherData.daily[0].temp.max)}°C`;
+		weather.low = `${Math.round(weatherData.daily[0].temp.min)}°C`;
 	} catch (err) {
-		iconUrl = 'http://openweathermap.org/img/wn/03d@2x.png'; // fallback to scattered clouds
-		weatherText = "Today, I couldn't get the weather for you :\\ (" + err.message + ')';
+		weather.icon = 'http://openweathermap.org/img/wn/03d@2x.png'; // fall back to scattered clouds
 	}
 
 	// Calendar
@@ -147,14 +156,7 @@ app.get('/dash', async (req, res) => {
 		cache.set('events', events);
 	}
 
-	res.render('dash', {
-		weather: {
-			icon: iconUrl,
-			weatherText,
-			feelsLike,
-		},
-		events
-	});
+	res.render('dash', { date, weather, events });
 });
 
 app.get('/dash.png', async (req, res) => {
