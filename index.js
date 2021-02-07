@@ -1,5 +1,6 @@
 const path = require('path');
 const util = require('util');
+const crypto = require('crypto');
 let { execFile } = require('child_process');
 execFile = util.promisify(execFile);
 const request = require('request-promise-native');
@@ -71,7 +72,15 @@ const formatTimeDate = (date) => {
 	};
 }
 
-app.get('/dash', async (req, res) => {
+app.get('/dash', async (req, res, next) => {
+	// Verify code
+	if (nconf.get('SECRET')) {
+		const code = crypto.createHash('md5').update(`${nconf.get('SECRET')}${Math.floor(Math.floor(Date.now() / 1000) / 30)}\n`).digest('hex');
+		if (req.query.code !== code) {
+			return next();
+		}
+	}
+
 	const now = new Date();
 
 	// Date
@@ -173,7 +182,7 @@ app.get('/dash.png', async (req, res) => {
 		width: 600,
 		height: 800,
 	});
-	await page.goto('http://localhost:3000/dash');
+	await page.goto(`http://localhost:3000/dash${req.query.code ? `?code=${req.query.code}` : ''}`);
 	await page.screenshot({path: 'dash.png'});
 	await browser.close();
 
