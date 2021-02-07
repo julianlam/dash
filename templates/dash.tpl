@@ -11,6 +11,7 @@
 			body > .flex {
 				align-items: start;
 				margin: .6em;
+				margin-left: 0;
 				height: calc(600px - 1.2em);
 				width: calc(800px - 1.2em);
 				overflow: hidden;
@@ -36,7 +37,7 @@
 			}
 			.weather .square small {
 				text-transform: uppercase;
-				font-size: 1em;
+				font-weight: 600;
 			}
 			.weather .current {
 				background-color: #333;
@@ -56,7 +57,7 @@
 				color: #fff;
 			}
 
-			.events .header {
+			.events .header, .news .header {
 				border-bottom: 1px dashed #666;
 				display: block;
 				padding-bottom: 0.3em;
@@ -73,45 +74,64 @@
 			.events .location, .events strong {
 				white-space: nowrap;
 			}
+
+			.news ul {
+				padding: 0;
+			}
+			.news li {
+				list-style-type: none;
+				font-size: 1em;
+				margin-bottom: 1em
+			}
 		</style>
 	</head>
 	<body>
 		<div class="flex two">
-			<div class="flex three weather">
-				<div>
-					<div class="icon">
-						<img src="{weather.icon}" />
+			<div>
+				<div class="flex three weather">
+					<div>
+						<div class="icon">
+							<img src="{weather.icon}" />
+						</div>
+					</div>
+					<div>
+						<div class="square date">
+							<span>{date.day}</span>
+							<small>{date.month}</small>
+						</div>
+					</div>
+					<div>
+						<div class="square current">
+							<span>{weather.current}</span>
+							<small>current</small>
+						</div>
+					</div>
+					<div>
+						<div class="square feels_like">
+							<span>{weather.feels_like}</span>
+							<small>feels like</small>
+						</div>
+					</div>
+					<div>
+						<div class="square high">
+							<span>{weather.high}</span>
+							<small>high</small>
+						</div>
+					</div>
+					<div>
+						<div class="square low">
+							<span>{weather.low}</span>
+							<small>low</small>
+						</div>
 					</div>
 				</div>
-				<div>
-					<div class="square date">
-						<span>{date.day}</span>
-						<small>{date.month}</small>
-					</div>
-				</div>
-				<div>
-					<div class="square current">
-						<span>{weather.current}</span>
-						<small>current</small>
-					</div>
-				</div>
-				<div>
-					<div class="square feels_like">
-						<span>{weather.feels_like}</span>
-						<small>feels like</small>
-					</div>
-				</div>
-				<div>
-					<div class="square high">
-						<span>{weather.high}</span>
-						<small>high</small>
-					</div>
-				</div>
-				<div>
-					<div class="square low">
-						<span>{weather.low}</span>
-						<small>low</small>
-					</div>
+				<div class="news">
+					<strong class="header">Headlines</strong>
+					<ul>
+						{{{ each news }}}
+						<li>{@value}</li>
+						{{{ end }}}
+					</ul>
 				</div>
 			</div>
 			<div>

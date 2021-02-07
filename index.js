@@ -9,6 +9,8 @@ const puppeteer = require('puppeteer');
 const pngjs = require('pngjs').PNG;
 const LRU = require('lru-cache');
 const { google } = require('googleapis');
+let rssParser = require('rss-parser');
+let RSS = new rssParser();
 
 const nconf = require('nconf');
 nconf.argv().env();
@@ -20,7 +22,7 @@ const benchpress = require('benchpressjs');
 const viewsDir = path.join(__dirname, 'templates');
 
 // Sanity checks
-const required = ['OPENWEATHERMAP_KEY', 'GOOGLE_CALENDAR_ID', 'GOOGLE_APPLICATION_CREDENTIALS'];
+const required = ['OPENWEATHERMAP_KEY', 'GOOGLE_CALENDAR_ID', 'GOOGLE_APPLICATION_CREDENTIALS', 'RSS_URL'];
 const checkRequired = (prop) => {
 	const ok = !!nconf.get(prop);
 	if (!ok) {
@@ -78,6 +80,10 @@ app.get('/dash', async (req, res) => {
 		day: dateString[0],
 		month: dateString[1],
 	};
+
+	// News
+	let feed = await RSS.parseURL(nconf.get('RSS_URL'));
+	const news = feed.items.map(item => item.title);
 
 	// Weather
 	let weatherData;
@@ -156,7 +162,7 @@ app.get('/dash', async (req, res) => {
 		cache.set('events', events);
 	}
 
-	res.render('dash', { date, weather, events });
+	res.render('dash', { date, weather, news, events });
 });
 
 app.get('/dash.png', async (req, res) => {
