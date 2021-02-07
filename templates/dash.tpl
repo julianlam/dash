@@ -15,10 +15,10 @@
 				height: calc(600px - 1.2em);
 				width: calc(800px - 1.2em);
 				overflow: hidden;
-				/* transform: rotate(270deg);
+				transform: rotate(270deg);
 				position: absolute;
 				top: 100px;
-				left: -100px; */
+				left: -100px;
 			}
 
 			.weather > div > div {
