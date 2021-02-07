@@ -32,9 +32,6 @@
 				justify-content: center;
 				flex-direction: column;
 			}
-			.weather .icon {
-				background-color: #aaa;
-			}
 			.weather .square span {
 				font-weight: 600;
 				font-size: 2em;
@@ -43,12 +40,15 @@
 				text-transform: uppercase;
 				font-weight: 600;
 			}
+			.weather .icon {
+				background-color: #aaa;
+			}
 			.weather .current {
-				background-color: #333;
-				color: #fff;
+				background-color: #ccc;
 			}
 			.weather .feels_like {
-				background-color: #ccc;
+				background-color: #333;
+				color: #fff;
 			}
 			.weather .high {
 				background-color: #eee;
