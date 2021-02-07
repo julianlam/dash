@@ -6,35 +6,37 @@
 		<style>
 			body {
 				font-family: 'Open Sans', sans-serif;
-				margin: .6em;
-				height: calc(600px - 1.2em);
-				width: calc(800px - 1.2em);
-				transform: rotate(270deg);
-				position: absolute;
-				top: 100px;
-				left: -100px;
 			}
 
 			body > .flex {
 				align-items: start;
+				margin: .6em;
+				height: calc(600px - 1.2em);
+				width: calc(800px - 1.2em);
+				overflow: hidden;
+				/* transform: rotate(270deg);
+				position: absolute;
+				top: 100px;
+				left: -100px; */
 			}
 
 			.weather > div > div {
-				min-height: 128px;
+				min-height: 100px;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				flex-direction: column;
 			}
 			.weather .icon {
-				background-color: #ccc;
+				background-color: #aaa;
 			}
 			.weather .square span {
 				font-weight: 600;
-				font-size: 3em;
+				font-size: 2em;
 			}
 			.weather .square small {
 				text-transform: uppercase;
+				font-size: 1em;
 			}
 			.weather .current {
 				background-color: #333;
@@ -47,10 +49,10 @@
 				background-color: #eee;
 			}
 			.weather .low {
-				background-color: #aaa;
+				background-color: #999;
 			}
 			.weather .date {
-				background-color: #999;
+				background-color: #666;
 				color: #fff;
 			}
 
@@ -75,7 +77,7 @@
 	</head>
 	<body>
 		<div class="flex two">
-			<div class="flex two weather">
+			<div class="flex three weather">
 				<div>
 					<div class="icon">
 						<img src="{weather.icon}" />
