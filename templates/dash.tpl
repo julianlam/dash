@@ -11,7 +11,7 @@
 			body > .flex {
 				align-items: start;
 				margin: .6em;
-				margin-left: 0;
+				margin-top: .6em;
 				height: calc(600px - 1.2em);
 				width: calc(800px - 1.2em);
 				overflow: hidden;
@@ -19,6 +19,10 @@
 				position: absolute;
 				top: 100px;
 				left: -100px;
+			}
+
+			body > .flex > div:first-child {
+				margin-left: -0.6em;
 			}
 
 			.weather > div > div {
