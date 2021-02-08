@@ -75,6 +75,11 @@
 				text-overflow: ellipsis;
 				margin-bottom: .6em;
 			}
+			.events li[data-allday="1"] {
+				background: #666;
+				color: #fff;
+				padding: 0.6em;
+			}
 			.events .location, .events strong {
 				white-space: nowrap;
 			}
@@ -143,7 +148,7 @@
 					<strong class="header">Upcoming appointments</strong>
 					<ul>
 						{{{ each events }}}
-							<li>
+							<li data-allday="{../allday}">
 								<strong>{../summary}</strong><br />
 								<small>{../text}</small><br />
 								<small class="location">{../location}</small>

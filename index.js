@@ -139,13 +139,20 @@ app.get('/dash', async (req, res, next) => {
 				return response.map((item) => ({
 					summary: item.summary,
 					location: item.location,
-					start: new Date(item.start.dateTime),
-					end: new Date(item.end.dateTime),
+					start: new Date(item.start.dateTime || item.start.date),
+					end: new Date(item.end.dateTime || item.end.date),
 				})).map((item) => {
 					const formatted = formatTimeDate(item.start);
 					length = (item.end - item.start) / 1000 / 60;	// minutes
-					length = `${length} minutes`;	// TODO: handle hours
-					item.text = `${formatted.date} – ${formatted.time} (${length})`
+
+					if (length !== 1440) {
+						length = `${length} minutes`;	// TODO: handle hours
+						item.text = `${formatted.date} – ${formatted.time} (${length})`;
+						item.allday = 0;
+					} else {
+						item.text = `${formatted.date}`;
+						item.allday = 1;
+					}
 
 					return item;
 				});
