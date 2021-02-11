@@ -60,15 +60,15 @@ const auth = new google.auth.GoogleAuth({
 const calendar = google.calendar({version: 'v3', auth});
 const getEvents = util.promisify(calendar.events.list.bind(calendar.events));
 
-const formatTimeDate = (date) => {
+const formatTimeDate = (date, utc) => {
 	date = date || new Date();
-	let minutes = date.getMinutes();
-	let hours = date.getHours();
+	let minutes = date[utc ? 'getUTCMinutes' : 'getMinutes']();
+	let hours = date[utc ? 'getUTCHours' : 'getHours']();
 	[minutes, hours] = [minutes, hours].map(num => num < 10 ? '0'.concat(num) : num);
 	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	return {
 		time: `${hours}:${minutes}`,
-		date: `${date.getUTCDate()} ${months[date.getMonth()]} ${date.getFullYear()}`,
+		date: `${date[utc ? 'getUTCDate' : 'getDate']()} ${months[date.getMonth()]} ${date.getFullYear()}`,
 	};
 }
 
@@ -142,16 +142,15 @@ app.get('/dash', async (req, res, next) => {
 					start: new Date(item.start.dateTime || item.start.date),
 					end: new Date(item.end.dateTime || item.end.date),
 				})).map((item) => {
-					const formatted = formatTimeDate(item.start);
 					length = (item.end - item.start) / 1000 / 60;	// minutes
+					item.allday = length === 1440;
+					const formatted = formatTimeDate(item.start, item.allday);
 
-					if (length !== 1440) {
+					if (!item.allday) {
 						length = `${length} minutes`;	// TODO: handle hours
 						item.text = `${formatted.date} – ${formatted.time} (${length})`;
-						item.allday = 0;
 					} else {
 						item.text = `${formatted.date}`;
-						item.allday = 1;
 					}
 
 					return item;
