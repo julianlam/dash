@@ -68,7 +68,7 @@ const formatTimeDate = (date) => {
 	const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	return {
 		time: `${hours}:${minutes}`,
-		date: `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`,
+		date: `${date.getUTCDate()} ${months[date.getMonth()]} ${date.getFullYear()}`,
 	};
 }
 
