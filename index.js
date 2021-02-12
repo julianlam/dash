@@ -143,7 +143,7 @@ app.get('/dash', async (req, res, next) => {
 					end: new Date(item.end.dateTime || item.end.date),
 				})).map((item) => {
 					length = (item.end - item.start) / 1000 / 60;	// minutes
-					item.allday = length === 1440;
+					item.allday = length === 1440 ? 1 : 0;
 					const formatted = formatTimeDate(item.start, item.allday);
 
 					if (!item.allday) {
