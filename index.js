@@ -74,7 +74,7 @@ const formatTimeDate = (date, utc) => {
 
 app.get('/dash', async (req, res, next) => {
 	// Verify code
-	const [compareCode, compareDate] = req.query.code.split(':');
+	const [compareCode, compareDate, battery] = req.query.code.split(':');
 	if (nconf.get('SECRET')) {
 		const code = crypto.createHash('md5').update(`${nconf.get('SECRET')}${compareDate}\n`).digest('hex');
 		if (compareCode !== code) {
@@ -128,7 +128,6 @@ app.get('/dash', async (req, res, next) => {
 
 	// Calendar
 	let events;
-	cache.set('events', []);
 	if (cache.has('events')) {
 		events = cache.get('events');
 	} else {
@@ -184,7 +183,7 @@ app.get('/dash', async (req, res, next) => {
 		cache.set('events', events);
 	}
 
-	res.render('dash', { date, weather, news, events });
+	res.render('dash', { date, weather, news, events, battery });
 });
 
 app.get('/dash.png', async (req, res) => {

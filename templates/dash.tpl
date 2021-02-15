@@ -104,6 +104,11 @@
 				white-space: pre-line;
 				font-size: 0.9em;
 			}
+
+			.battery {
+				display: inline-block;
+				float: right;
+			}
 		</style>
 	</head>
 	<body>
@@ -164,6 +169,7 @@
 			</div>
 			<div>
 				<div class="events">
+					<span class="battery">{battery}</span>
 					<strong class="header">Upcoming appointments</strong>
 					<ul>
 						{{{ each events }}}
