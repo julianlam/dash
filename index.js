@@ -117,12 +117,18 @@ app.get('/dash', async (req, res, next) => {
 		weather.feels_like = `${Math.round(weatherData.current.feels_like)}°C`;
 		weather.high = `${Math.round(weatherData.daily[0].temp.max)}°C`;
 		weather.low = `${Math.round(weatherData.daily[0].temp.min)}°C`;
+
+		if (weatherData.alerts) {
+			weather.alert = weatherData.alerts.shift();
+			weather.alert.description = weather.alert.description.trim();
+		}
 	} catch (err) {
 		weather.icon = 'http://openweathermap.org/img/wn/03d@2x.png'; // fall back to scattered clouds
 	}
 
 	// Calendar
 	let events;
+	cache.set('events', []);
 	if (cache.has('events')) {
 		events = cache.get('events');
 	} else {

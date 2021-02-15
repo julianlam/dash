@@ -11,7 +11,6 @@
 			body > .flex {
 				align-items: start;
 				margin: .6em;
-				margin-top: .6em;
 				height: calc(600px - 1.2em);
 				width: calc(800px - 1.2em);
 				overflow: hidden;
@@ -22,7 +21,7 @@
 			}
 
 			body > .flex > div:first-child {
-				margin-left: -0.6em;
+				padding-left: 0;
 			}
 
 			.weather > div > div {
@@ -61,7 +60,7 @@
 				color: #fff;
 			}
 
-			.events .header, .news .header {
+			.events .header, .news .header, .alert .header {
 				border-bottom: 1px dashed #666;
 				display: block;
 				padding-bottom: 0.3em;
@@ -91,6 +90,19 @@
 				list-style-type: none;
 				font-size: 1em;
 				margin-bottom: 1em
+			}
+
+			.alert {
+				background: #333;
+				color: #fff;
+				padding: 0.6em;
+			}
+			.alert .header {
+				text-transform: uppercase;
+			}
+			.alert p {
+				white-space: pre-line;
+				font-size: 0.9em;
 			}
 		</style>
 	</head>
@@ -134,6 +146,12 @@
 						</div>
 					</div>
 				</div>
+				{{{ if weather.alert }}}
+				<div class="alert">
+					<strong class="header">{weather.alert.event} alert</strong>
+					<p>{weather.alert.description}</p>
+				</div>
+				{{{ else }}}
 				<div class="news">
 					<strong class="header">Headlines</strong>
 					<ul>
@@ -142,6 +160,7 @@
 						{{{ end }}}
 					</ul>
 				</div>
+				{{{ end }}}
 			</div>
 			<div>
 				<div class="events">
