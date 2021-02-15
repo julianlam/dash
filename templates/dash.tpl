@@ -101,9 +101,14 @@
 			.alert .header {
 				text-transform: uppercase;
 			}
+			.alert .header img {
+				position: relative;
+				top: 2px;
+			}
 			.alert p {
 				white-space: pre-line;
 				font-size: 0.9em;
+				margin: 0;
 			}
 
 			.battery {
@@ -154,7 +159,7 @@
 				{{{ if weather.alerts.length }}}
 				{{{ each weather.alerts }}}
 				<div class="alert">
-					<strong class="header">{../event} alert</strong>
+					<strong class="header"><img src="/assets/alert-triangle.svg" /> {../event} alert</strong>
 					<p>{../description}</p>
 				</div>
 				{{{ end }}}
