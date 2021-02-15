@@ -76,7 +76,7 @@ app.get('/dash', async (req, res, next) => {
 	// Verify code
 	const [compareCode, compareDate, battery] = req.query.code.split(':');
 	if (nconf.get('SECRET')) {
-		const code = crypto.createHash('md5').update(`${nconf.get('SECRET')}${compareDate}\n`).digest('hex');
+		const code = crypto.createHash('md5').update(`${nconf.get('SECRET')}${Math.floor(compareDate / 30)}\n`).digest('hex');
 		if (compareCode !== code) {
 			return next();
 		}
