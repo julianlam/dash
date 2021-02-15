@@ -48,6 +48,8 @@ app.engine('jst', benchpress.__express);
 app.set('view engine', 'jst');
 app.set('views', viewsDir);
 
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
 // Cache results for 15 minutes
 const cache = new LRU({
 	maxAge: 1000 * 60 * 15,
@@ -119,8 +121,13 @@ app.get('/dash', async (req, res, next) => {
 		weather.low = `${Math.round(weatherData.daily[0].temp.min)}°C`;
 
 		if (weatherData.alerts) {
-			weather.alert = weatherData.alerts.shift();
-			weather.alert.description = weather.alert.description.trim();
+			weather.alerts = weatherData.alerts.map(({ event, description}) => {
+				description = description.trim().split('\n').filter(Boolean)[1];
+				return {
+					description,
+					event,
+				}
+			});
 		}
 	} catch (err) {
 		weather.icon = 'http://openweathermap.org/img/wn/03d@2x.png'; // fall back to scattered clouds

@@ -96,6 +96,7 @@
 				background: #333;
 				color: #fff;
 				padding: 0.6em;
+				margin-bottom: 0.6em;
 			}
 			.alert .header {
 				text-transform: uppercase;
@@ -106,7 +107,6 @@
 			}
 
 			.battery {
-				display: inline-block;
 				float: right;
 			}
 		</style>
@@ -151,12 +151,14 @@
 						</div>
 					</div>
 				</div>
-				{{{ if weather.alert }}}
+				{{{ if weather.alerts.length }}}
+				{{{ each weather.alerts }}}
 				<div class="alert">
-					<strong class="header">{weather.alert.event} alert</strong>
-					<p>{weather.alert.description}</p>
+					<strong class="header">{../event} alert</strong>
+					<p>{../description}</p>
 				</div>
-				{{{ else }}}
+				{{{ end }}}
+				{{{ end }}}
 				<div class="news">
 					<strong class="header">Headlines</strong>
 					<ul>
@@ -165,7 +167,6 @@
 						{{{ end }}}
 					</ul>
 				</div>
-				{{{ end }}}
 			</div>
 			<div>
 				<div class="events">
