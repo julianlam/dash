@@ -155,12 +155,17 @@ app.get('/dash', async (req, res, next) => {
 					start: new Date(item.start.dateTime || item.start.date),
 					end: new Date(item.end.dateTime || item.end.date),
 				})).map((item) => {
-					length = (item.end - item.start) / 1000 / 60;	// minutes
-					item.allday = length === 1440 ? 1 : 0;
+					let minutes = (item.end - item.start) / 1000 / 60;
+					let hours = 0;
+					item.allday = minutes === 1440 ? 1 : 0;
+					if (minutes >= 60) {
+						hours = Math.floor(minutes / 60);
+						minutes = minutes % hours;
+					}
 					const formatted = formatTimeDate(item.start, item.allday);
 
 					if (!item.allday) {
-						length = `${length} minutes`;	// TODO: handle hours
+						const length = `${hours ? `${hours} hour${hours > 1 ? 's' : ''}${minutes ? ' ' : ''}` : ''}${minutes ? `${minutes} minutes` : ''}`;
 						item.text = `${formatted.date} – ${formatted.time} (${length})`;
 					} else {
 						item.text = `${formatted.date}`;
