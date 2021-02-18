@@ -122,7 +122,7 @@ app.get('/dash', async (req, res, next) => {
 
 		if (weatherData.alerts) {
 			weather.alerts = weatherData.alerts.map(({ event, description}) => {
-				description = description.trim().split('\n').filter(Boolean)[1];
+				description = description.trim().split('\n\n').filter(Boolean)[1];
 				return {
 					description,
 					event,

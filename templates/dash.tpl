@@ -159,7 +159,7 @@
 				{{{ if weather.alerts.length }}}
 				{{{ each weather.alerts }}}
 				<div class="alert">
-					<strong class="header"><img src="/assets/alert-triangle.svg" /> {../event} alert</strong>
+					<strong class="header"><img src="/assets/alert-triangle.svg" /> {../event} advisory</strong>
 					<p>{../description}</p>
 				</div>
 				{{{ end }}}
